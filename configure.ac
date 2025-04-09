@@ -361,8 +361,11 @@ if test "${proj_config_ok}" = yes; then
   fi
 else
   if test "${PROJH}" = no ; then
-    PROJH=yes
-    AC_CHECK_HEADERS(proj.h,,PROJH=no)
+    saved_CPPFLAGS="${CPPFLAGS}"
+    CPPFLAGS="${CPPFLAGS} ${PROJ_CPPFLAGS}"
+    AC_CHECK_HEADERS([proj.h], [PROJH=yes], [PROJH=no])
+    CPPFLAGS="${saved_CPPFLAGS}"
+  
     if test "${PROJH}" = yes; then
       PROJ6="yes"
       PROJ_CPPFLAGS="${PROJ_CPPFLAGS} -DHAVE_PROJ_H"
@@ -375,11 +378,16 @@ CPPFLAGS="${INCPPFLAGS} ${PKG_CPPFLAGS} ${PROJ_CPPFLAGS}"
 if test "${PROJH}" = no
 then
   proj4ok=yes
-  AC_CHECK_HEADERS(proj_api.h,,proj4ok=no)
+  saved_CPPFLAGS="${CPPFLAGS}"
+  CPPFLAGS="${CPPFLAGS} ${PROJ_CPPFLAGS}"
+  AC_CHECK_HEADERS([proj_api.h], [proj4ok=yes], [proj4ok=no])
+  CPPFLAGS="${saved_CPPFLAGS}"
+
   if test "${proj4ok}" = no; then
-     AC_MSG_ERROR([proj_api.h not found in standard or given locations.])
+     AC_MSG_ERROR([proj_api.h not found in standard or given locations. Use --with-proj-include=DIR if necessary.])
   fi
 fi
+
 
 # dnl ditto for a library path
 AC_ARG_WITH([proj-lib],
